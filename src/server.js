@@ -30,7 +30,7 @@ mongoose
   .catch((err) => console.log("Fehler bei der Verbindung zu MongoDB:", err));
 
 // Routen einbinden
-app.use("/api/auth", authRoutes);
+app.use("/api", authRoutes);
 app.use("/api/user", userRoutes);
 
 // Deine Routen hier...
