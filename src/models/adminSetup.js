@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const User = require("./User"); // Achte darauf, dass das User-Modell korrekt importiert wird
+const User = require("./userModel"); // Achte darauf, dass das User-Modell korrekt importiert wird
 
 // Funktion zum Erstellen des Standard-Admins
 async function createDefaultAdmin() {

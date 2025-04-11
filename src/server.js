@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const { createDefaultAdmin } = require('./models/adminSetup'); 
 
 const app = express();
 const port = process.env.PORT
@@ -19,6 +20,9 @@ app.use(
   })
 );
 
+// Erstelle den Standard-Admin, falls noch keiner existiert
+createDefaultAdmin();
+
 // MongoDB-Verbindung
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -26,7 +30,7 @@ mongoose
   .catch((err) => console.log("Fehler bei der Verbindung zu MongoDB:", err));
 
 // Routen einbinden
-app.use("/api", authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 
 // Deine Routen hier...

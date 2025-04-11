@@ -34,6 +34,7 @@ exports.register = async (req, res) => {
     if (existingUser) return res.status(400).send('Benutzer existiert bereits.');
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedSecurityAnswer = await bcrypt.hash(securityAnswer, 10);
 
     const newUser = new User({
       vorname,
@@ -43,7 +44,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       role,
       securityQuestion,
-      securityAnswer,
+      securityAnswer: hashedSecurityAnswer,
     });
 
     await newUser.save();
