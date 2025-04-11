@@ -26,22 +26,27 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-// Funktion, um zu überprüfen, ob die E-Mail existiert
-exports.checkEmail = async (req, res) => {
-  const { email } = req.body;
-  console.log("Überprüfe E-Mail:", email);
-
-  try {
-    const user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ message: 'E-Mail existiert bereits' });
+// Funktion, um zu überprüfen, ob die E-Mail existiertexports.checkEmail = async (req, res) => {
+  exports.checkEmail = async (req, res) => {
+    const { email } = req.body;  // Wir erwarten die E-Mail im Request-Body
+    console.log("Überprüfe E-Mail:", email);
+  
+    try {
+      // Überprüfen, ob die E-Mail im System existiert
+      const user = await User.findOne({ email });
+  
+      if (user) {
+        // Wenn der Benutzer mit der E-Mail existiert
+        return res.status(200).json({ message: 'E-Mail existiert', exists: true });
+      } else {
+        // Wenn der Benutzer mit der E-Mail nicht existiert
+        return res.status(404).json({ message: 'E-Mail existiert nicht', exists: false });
+      }
+    } catch (error) {
+      console.error('Fehler bei der E-Mail-Prüfung:', error);
+      res.status(500).json({ message: 'Fehler beim Überprüfen der E-Mail' });
     }
-    res.status(200).json({ message: 'E-Mail ist verfügbar' });
-  } catch (error) {
-    console.error('Fehler bei der E-Mail-Prüfung:', error);
-    res.status(500).json({ message: 'Fehler beim Überprüfen der E-Mail' });
-  }
-};
+  };
 
 // Benutzer-Passwort zurücksetzen
 exports.resetPassword = async (req, res) => {
