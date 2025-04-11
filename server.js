@@ -300,6 +300,42 @@ app.put("/api/user/role", authenticateToken, async (req, res) => {
   }
 });
 
+app.post("/api/check-email", async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (user) {
+    return res.status(200).json({ exists: true });
+  } else {
+    return res.status(404).json({ exists: false });
+  }
+});
+
+app.post("/api/verify-security-answer", async (req, res) => {
+  const { email, securityAnswer } = req.body;
+
+  const user = await User.findOne({ email });
+  if (user && user.securityAnswer === securityAnswer) {
+    return res.status(200).json({ valid: true });
+  } else {
+    return res.status(400).json({ valid: false });
+  }
+});
+
+app.post("/api/reset-password", async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: "Benutzer nicht gefunden" });
+  }
+
+  user.password = await bcrypt.hash(newPassword, 10);
+  await user.save();
+
+  res.status(200).json({ message: "Passwort erfolgreich zurückgesetzt" });
+});
+
 // Deine Routen hier...
 app.listen(process.env.PORT, () => {
   console.log(`Server läuft auf http://localhost:${process.env.PORT}`);
