@@ -81,11 +81,9 @@ app.post("/api/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Fehler beim Login:", error);
-    res
-      .status(500)
-      .json({
-        message: "Fehler beim Login. Bitte versuchen Sie es später erneut.",
-      });
+    res.status(500).json({
+      message: "Fehler beim Login. Bitte versuchen Sie es später erneut.",
+    });
   }
 });
 
@@ -102,19 +100,6 @@ app.post("/api/register", async (req, res) => {
     securityQuestion,
     securityAnswer,
   } = req.body;
-
-  // Überprüfen, ob alle erforderlichen Felder vorhanden sind
-  if (
-    !vorname ||
-    !nachname ||
-    !email ||
-    !password ||
-    !role ||
-    !securityQuestion ||
-    !securityAnswer
-  ) {
-    return res.status(400).send("Fehlende erforderliche Felder.");
-  }
 
   try {
     // Überprüfen, ob der Benutzer bereits existiert
@@ -142,18 +127,34 @@ app.post("/api/register", async (req, res) => {
     await newUser.save();
 
     // JWT-Token erstellen
-    const refreshToken = jwt.sign(
-      { userId: newUser._id },
+    const token = jwt.sign(
+      { userId: newUser._id, email: newUser.email },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "7d" }
     );
 
-    res.status(201).send("Benutzer erfolgreich registriert");
+    // Refresh-Token erstellen
+    const refreshToken = jwt.sign(
+      { userId: newUser._id },
+      process.env.JWT_REFRESH_SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    res
+      .status(201)
+      .json({
+        message: "Benutzer erfolgreich registriert",
+        token: token,
+        refresh_token: process.env.JWT_REFRESH_SECRET_KEY,
+      });
   } catch (error) {
     console.error("Fehler bei der Registrierung:", error);
     res
       .status(500)
-      .send("Fehler bei der Registrierung. Bitte versuche es später erneut.");
+      .json({
+        message:
+          "Fehler bei der Registrierung. Bitte versuche es später erneut.",
+      });
   }
 });
 
