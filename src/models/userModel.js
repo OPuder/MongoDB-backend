@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-// Überprüfen, ob das Modell bereits existiert, um den Fehler zu vermeiden
 const userSchema = new mongoose.Schema({
   vorname: { type: String, required: true },
   nachname: { type: String, required: true },
@@ -13,7 +12,6 @@ const userSchema = new mongoose.Schema({
   securityAnswer: { type: String, required: true },
 });
 
-// Wenn das Modell bereits existiert, wird es nicht neu definiert
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 module.exports = User;

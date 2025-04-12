@@ -1,13 +1,13 @@
 const bcrypt = require("bcryptjs");
-const User = require("./userModel"); // Achte darauf, dass das User-Modell korrekt importiert wird
+const User = require("./userModel");
 
-// Funktion zum Erstellen des Standard-Admins
 async function createDefaultAdmin() {
   try {
     const adminExists = await User.findOne({ role: "admin" });
 
     if (!adminExists) {
-      const hashedPassword = await bcrypt.hash("admin123", 10); // Standardpasswort
+      const hashedPassword = await bcrypt.hash("admin123", 10);
+      const hashedSecurityAnswer = await bcrypt.hash("admin", 10);
 
       const admin = new User({
         vorname: "Admin",
@@ -17,7 +17,7 @@ async function createDefaultAdmin() {
         password: hashedPassword,
         role: "admin",
         securityQuestion: "Wer bist du? admin",
-        securityAnswer: "admin",
+        securityAnswer: hashedSecurityAnswer,
       });
 
       await admin.save();
@@ -30,5 +30,4 @@ async function createDefaultAdmin() {
   }
 }
 
-// Exportiere die Funktion
 module.exports = { createDefaultAdmin };
