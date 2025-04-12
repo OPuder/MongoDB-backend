@@ -29,7 +29,6 @@ exports.updateProfile = async (req, res) => {
 // Funktion, um zu überprüfen, ob die E-Mail existiertexports.checkEmail = async (req, res) => {
   exports.checkEmail = async (req, res) => {
     const { email } = req.body;  // Wir erwarten die E-Mail im Request-Body
-    console.log("Überprüfe E-Mail:", email);
   
     try {
       // Überprüfen, ob die E-Mail im System existiert

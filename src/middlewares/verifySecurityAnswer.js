@@ -5,8 +5,6 @@ const User = require('../models/userModel');
 const verifySecurityAnswer = async (req, res, next) => {
   const { email, securityAnswer } = req.body;
 
-  console.log("Überprüfe Sicherheitsantwort:", securityAnswer);
-  console.log("E-Mail:", email);
   try {
     const user = await User.findOne({ email });
     if (!user) {
