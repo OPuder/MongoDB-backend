@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 // Überprüfen, ob das Modell bereits existiert, um den Fehler zu vermeiden
 const userSchema = new mongoose.Schema({

@@ -48,6 +48,53 @@ exports.updateProfile = async (req, res) => {
     }
   };
 
+
+// Deine Controller-Funktion zum Überprüfen der Sicherheitsantwort
+exports.verifySecurityAnswer = async (req, res) => {
+  const { email, securityAnswer } = req.body;
+
+  try {
+    // Benutzer anhand der E-Mail finden
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Benutzer nicht gefunden' });
+    }
+
+    // Vergleiche die gehashte Antwort mit der eingegebenen Antwort
+    const isAnswerCorrect = await bcrypt.compare(securityAnswer, user.securityAnswer);
+
+    // Wenn die Antwort korrekt ist
+    if (isAnswerCorrect) {
+      return res.status(200).json({ valid: true });
+    } else {
+      return res.status(400).json({ valid: false, message: 'Falsche Antwort auf die Sicherheitsfrage' });
+    }
+  } catch (error) {
+    console.error('Fehler bei der Überprüfung der Sicherheitsantwort:', error);
+    res.status(500).json({ message: 'Fehler bei der Überprüfung der Sicherheitsantwort' });
+  }
+};
+
+// Sicherheitsfrage abrufen
+exports.getSecurityQuestion = async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Benutzer nicht gefunden' });
+    }
+
+    // Gebe die Sicherheitsfrage zurück
+    res.status(200).json({ question: user.securityQuestion });
+  } catch (error) {
+    console.error('Fehler beim Abrufen der Sicherheitsfrage:', error);
+    res.status(500).json({ message: 'Fehler beim Abrufen der Sicherheitsfrage' });
+  }
+};
+
 // Benutzer-Passwort zurücksetzen
 exports.resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;

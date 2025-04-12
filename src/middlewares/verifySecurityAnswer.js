@@ -3,15 +3,17 @@ const User = require('../models/userModel');
 
 // Middleware zum Überprüfen der Sicherheitsantwort
 const verifySecurityAnswer = async (req, res, next) => {
-  const { userId, inputAnswer } = req.body;
+  const { email, securityAnswer } = req.body;
 
+  console.log("Überprüfe Sicherheitsantwort:", securityAnswer);
+  console.log("E-Mail:", email);
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'Benutzer nicht gefunden' });
     }
 
-    const isMatch = await bcrypt.compare(inputAnswer, user.securityAnswer);
+    const isMatch = await bcrypt.compare(securityAnswer, user.securityAnswer);
     if (!isMatch) {
       return res.status(400).json({ message: 'Die Sicherheitsantwort stimmt nicht überein' });
     }
