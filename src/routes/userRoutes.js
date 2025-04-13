@@ -4,8 +4,8 @@ const userController = require('../controllers/userController');
 const authenticateToken = require('../middlewares/authenticateToken');
 const verifySecurityAnswer = require('../middlewares/verifySecurityAnswer');
 
-router.get('/profile', authenticateToken, userController.getProfile);
-router.put('/profile', authenticateToken, userController.updateProfile);
+router.get('/get-AllUsers', authenticateToken, userController.getAllUsers);
+router.put('/update-profile', authenticateToken, userController.updateProfile);
 router.post('/check-email', userController.checkEmail);
 router.get('/get-security-question', userController.getSecurityQuestion);
 router.post('/verify-security-answer', verifySecurityAnswer, userController.verifySecurityAnswer);

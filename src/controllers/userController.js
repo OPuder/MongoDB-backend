@@ -1,26 +1,35 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 
-exports.getProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId).select("-password");
-    if (!user)
-      return res.status(404).json({ message: "Benutzer nicht gefunden" });
-    res.json(user);
-  } catch (error) {
-    console.error("Fehler beim Abrufen des Profils:", error);
-    res.status(500).json({ message: "Fehler beim Abrufen des Profils" });
-  }
-};
-
 exports.updateProfile = async (req, res) => {
+  const { password, confirmPassword, vorname, nachname, spitzname, email, role, securityQuestion, securityAnswer } = req.body;
+
+  if (password && password !== confirmPassword) {
+    return res.status(400).json({ message: 'Die Passwörter stimmen nicht überein' });
+  }
+
+  if (password) {
+    req.body.password = await bcrypt.hash(password, 10);
+  }
+
   try {
-    const updatedUser = await User.findByIdAndUpdate(req.userId, req.body, {
+    const updatedUser = await User.findByIdAndUpdate(req.userId, {
+      vorname: vorname || undefined,
+      nachname: nachname || undefined,
+      spitzname: spitzname || undefined,
+      email: email || undefined,
+      role: role || undefined,
+      securityQuestion: securityQuestion || undefined,
+      securityAnswer: securityAnswer ? await bcrypt.hash(securityAnswer, 10) : undefined,
+      password: req.body.password || undefined,
+    }, {
       new: true,
-    }).select("-password");
+    }).select("-password"); 
+
     if (!updatedUser) {
       return res.status(404).json({ message: "Benutzer nicht gefunden" });
     }
+
     res.json(updatedUser);
   } catch (error) {
     console.error("Fehler beim Aktualisieren des Profils:", error);
@@ -121,10 +130,15 @@ exports.resetPassword = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}); // Hier wird die komplette Benutzerliste abgerufen
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Zugriff nur für Admins erlaubt" });
+    }
+
+    const users = await User.find({}).select("-password -securityAnswer");
+
     res.status(200).json(users);
   } catch (error) {
-    console.error('Fehler beim Abrufen der Benutzer:', error);
-    res.status(500).json({ message: 'Fehler beim Abrufen der Benutzer' });
+    console.error("Fehler beim Abrufen der Benutzer:", error);
+    res.status(500).json({ message: "Fehler beim Abrufen der Benutzer" });
   }
 };

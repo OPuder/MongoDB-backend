@@ -73,12 +73,12 @@ exports.register = async (req, res) => {
     await newUser.save();
 
     const token = jwt.sign(
-      { userId: newUser._id, email: newUser.email },
+      { userId: newUser._id, email: newUser.email, role: newUser.role,},
       process.env.JWT_SECRET_KEY,
       { expiresIn: "7d" }
     );
     const refreshToken = jwt.sign(
-      { userId: newUser._id },
+      { userId: newUser._id, email: newUser.email, role: newUser.role,},
       process.env.JWT_REFRESH_SECRET_KEY,
       { expiresIn: "7d" }
     );

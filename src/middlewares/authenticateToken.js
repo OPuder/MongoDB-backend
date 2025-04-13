@@ -12,6 +12,7 @@ const authenticateToken = (req, res, next) => {
       return res.status(403).json({ message: "Token ist ungültig" });
     }
 
+    req.user = decoded;
     req.userId = decoded.userId;
     next();
   });
