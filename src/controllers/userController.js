@@ -118,3 +118,13 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: "Fehler beim Zurücksetzen des Passworts" });
   }
 };
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}); // Hier wird die komplette Benutzerliste abgerufen
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Fehler beim Abrufen der Benutzer:', error);
+    res.status(500).json({ message: 'Fehler beim Abrufen der Benutzer' });
+  }
+};
