@@ -12,28 +12,43 @@ exports.updateProfile = async (req, res) => {
     req.body.password = await bcrypt.hash(password, 10);
   }
 
+  if (email) {
+    const existingUserWithEmail = await User.findOne({ email });
+    if (existingUserWithEmail && existingUserWithEmail._id.toString() !== req.userId.toString()) {
+      return res.status(400).json({ message: 'Diese E-Mail-Adresse wird bereits verwendet.' });
+    }
+  }
+
+  if (!vorname || !nachname || !spitzname) {
+    return res.status(400).json({ message: 'Vorname, Nachname und Spitzname sind erforderlich' });
+  }
+
   try {
-    const updatedUser = await User.findByIdAndUpdate(req.userId, {
-      vorname: vorname || undefined,
-      nachname: nachname || undefined,
-      spitzname: spitzname || undefined,
-      email: email || undefined,
-      role: role || undefined,
-      securityQuestion: securityQuestion || undefined,
-      securityAnswer: securityAnswer ? await bcrypt.hash(securityAnswer, 10) : undefined,
-      password: req.body.password || undefined,
-    }, {
-      new: true,
-    }).select("-password"); 
+    const updatedUser = await User.findByIdAndUpdate(
+      req.userId,
+      {
+        vorname: vorname || undefined,
+        nachname: nachname || undefined,
+        spitzname: spitzname || undefined,
+        email: email || undefined,
+        role: role || undefined,
+        securityQuestion: securityQuestion || undefined,
+        securityAnswer: securityAnswer ? await bcrypt.hash(securityAnswer, 10) : undefined,
+        password: req.body.password || undefined,
+      },
+      {
+        new: true,
+      }
+    ).select("-password");
 
     if (!updatedUser) {
-      return res.status(404).json({ message: "Benutzer nicht gefunden" });
+      return res.status(404).json({ message: 'Benutzer nicht gefunden' });
     }
 
     res.json(updatedUser);
   } catch (error) {
-    console.error("Fehler beim Aktualisieren des Profils:", error);
-    res.status(500).json({ message: "Fehler beim Aktualisieren des Profils" });
+    console.error('Fehler beim Aktualisieren des Profils:', error);
+    res.status(500).json({ message: 'Fehler beim Aktualisieren des Profils' });
   }
 };
 
