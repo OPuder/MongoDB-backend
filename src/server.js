@@ -26,7 +26,7 @@ mongoose
   .then(() => console.log("Datenbank verbunden"))
   .catch((err) => console.log("Fehler bei der Verbindung zu MongoDB:", err));
 
-app.use("/api", authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 
 app.listen(process.env.PORT, () => {
